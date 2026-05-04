@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -111,12 +112,46 @@ fun CounterScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Zero")
 @Composable
-private fun CounterScreenPreview() {
+private fun CounterScreenZeroPreview() {
     CounterTheme {
         Surface {
             CounterScreen()
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Positive")
+@Composable
+private fun CounterScreenPositivePreview() {
+    CounterTheme {
+        Surface {
+            CompositionLocalProvider(
+                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                    override val count = "5"
+                    override val countLabel = "Positive"
+                }
+            ) {
+                CounterScreen()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Negative")
+@Composable
+private fun CounterScreenNegativePreview() {
+    CounterTheme {
+        Surface {
+            CompositionLocalProvider(
+                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                    override val count = "-3"
+                    override val countLabel = "Negative"
+                }
+            ) {
+                CounterScreen()
+            }
         }
     }
 }
