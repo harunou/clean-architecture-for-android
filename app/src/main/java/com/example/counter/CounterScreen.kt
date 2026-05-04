@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
@@ -15,8 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.counter.ui.theme.CounterTheme
 
 enum class CounterLabel { POSITIVE, NEGATIVE, ZERO }
 
@@ -54,12 +58,13 @@ val LocalCounterScreenController = compositionLocalOf<CounterScreenController> {
 }
 
 @Composable
-fun makeCounterScreenPresenter(viewModel: CounterViewModel): CounterScreenPresenter {
+fun makeCounterScreenPresenter(): CounterScreenPresenter {
     if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
 
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val vm = hiltViewModel<CounterViewModel>()
+    val uiState = vm.uiState.collectAsStateWithLifecycle()
 
-    return remember(viewModel) {
+    return remember(vm) {
         object : CounterScreenPresenter {
             override val count: String get() = uiState.value.count.toString()
             override val countLabel: String get() = uiState.value.label.name.lowercase().replaceFirstChar { it.uppercase() }
@@ -68,24 +73,23 @@ fun makeCounterScreenPresenter(viewModel: CounterViewModel): CounterScreenPresen
 }
 
 @Composable
-fun makeCounterScreenController(viewModel: CounterViewModel): CounterScreenController {
+fun makeCounterScreenController(): CounterScreenController {
     if (LocalInspectionMode.current) return LocalCounterScreenController.current
 
-    return remember(viewModel) {
+    val vm = hiltViewModel<CounterViewModel>()
+
+    return remember(vm) {
         object : CounterScreenController {
-            override fun onPlusButtonClick() = viewModel.increment()
-            override fun onMinusButtonClick() = viewModel.decrement()
+            override fun onPlusButtonClick() = vm.increment()
+            override fun onMinusButtonClick() = vm.decrement()
         }
     }
 }
 
 @Composable
-fun CounterScreen(
-    viewModel: CounterViewModel,
-    modifier: Modifier = Modifier,
-) {
-    val presenter = makeCounterScreenPresenter(viewModel)
-    val controller = makeCounterScreenController(viewModel)
+fun CounterScreen(modifier: Modifier = Modifier) {
+    val presenter = makeCounterScreenPresenter()
+    val controller = makeCounterScreenController()
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -103,6 +107,16 @@ fun CounterScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = controller::onMinusButtonClick) { Text("-") }
             Button(onClick = controller::onPlusButtonClick) { Text("+") }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CounterScreenPreview() {
+    CounterTheme {
+        Surface {
+            CounterScreen()
         }
     }
 }

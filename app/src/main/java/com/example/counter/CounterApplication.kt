@@ -1,7 +1,7 @@
 package com.example.counter
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class CounterApplication : Application() {
-    val container = AppContainer()
-}
+@HiltAndroidApp
+class CounterApplication : Application()

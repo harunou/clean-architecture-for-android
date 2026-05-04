@@ -2,12 +2,15 @@ package com.example.counter
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
 
-class CounterViewModel(
+@HiltViewModel
+class CounterViewModel @Inject constructor(
     private val getCounter: GetCounterUseCase,
     private val incrementCounter: IncrementCounterUseCase,
     private val decrementCounter: DecrementCounterUseCase,

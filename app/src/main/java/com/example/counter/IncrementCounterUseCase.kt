@@ -1,5 +1,7 @@
 package com.example.counter
 
-class IncrementCounterUseCase(private val repository: CounterRepository) {
+import javax.inject.Inject
+
+class IncrementCounterUseCase @Inject constructor(private val repository: CounterRepository) {
     operator fun invoke() = repository.increment()
 }
