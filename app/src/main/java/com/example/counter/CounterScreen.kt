@@ -14,21 +14,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModel
 import androidx.compose.ui.platform.LocalInspectionMode
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.counter.ui.theme.CounterTheme
 
-enum class CounterLabel { POSITIVE, NEGATIVE, ZERO }
+@HiltViewModel
+class CounterViewModel @Inject constructor(
+    val repository: CounterRepository,
+) : ViewModel()
 
-data class CounterUiState(
-    val count: Int = 0,
-    val label: CounterLabel = CounterLabel.ZERO,
-)
+enum class CounterLabel { POSITIVE, NEGATIVE, ZERO }
 
 interface CounterScreenPresenter {
     val count: String
@@ -63,12 +69,25 @@ fun makeCounterScreenPresenter(): CounterScreenPresenter {
     if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
 
     val vm = hiltViewModel<CounterViewModel>()
-    val uiState = vm.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+
+    val counter = remember(vm) {
+        vm.repository.observe()
+            .stateIn(
+                scope = scope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = Counter(),
+            )
+    }.collectAsStateWithLifecycle()
 
     return remember(vm) {
         object : CounterScreenPresenter {
-            override val count: String get() = uiState.value.count.toString()
-            override val countLabel: String get() = uiState.value.label.name.lowercase().replaceFirstChar { it.uppercase() }
+            override val count: String get() = counter.value.value.toString()
+            override val countLabel: String get() = when {
+                counter.value.value > 0 -> "Positive"
+                counter.value.value < 0 -> "Negative"
+                else -> "Zero"
+            }
         }
     }
 }
