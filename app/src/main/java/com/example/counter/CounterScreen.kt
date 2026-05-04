@@ -41,8 +41,8 @@ import com.example.counter.ui.theme.CounterTheme
 
 @HiltViewModel
 class CounterViewModel @Inject constructor(
-    val repository: CounterRepository,
-    val initializeCounter: InitializeCounterUseCase,
+    val counterRepository: CounterRepository,
+    val initializeCounterUseCase: InitializeCounterUseCase,
 ) : ViewModel()
 
 interface CounterScreenPresenter {
@@ -108,7 +108,7 @@ fun makeCounterScreenPresenter(
     val scope = rememberCoroutineScope()
 
     val counter = remember(vm) {
-        vm.repository.observe()
+        vm.counterRepository.observe()
             .stateIn(
                 scope = scope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -146,18 +146,18 @@ fun makeCounterScreenController(
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onLaunch() { scope.launch { vm.initializeCounter.with(isLoadingFlow).execute() } }
+            override fun onLaunch() { scope.launch { vm.initializeCounterUseCase.with(isLoadingFlow).execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
                     isLoadingFlow.value = true
-                    vm.repository.increment(sliderValueFlow.value.toInt())
+                    vm.counterRepository.increment(sliderValueFlow.value.toInt())
                     isLoadingFlow.value = false
                 }
             }
             override fun onMinusButtonClick() {
                 scope.launch {
                     isLoadingFlow.value = true
-                    vm.repository.decrement(sliderValueFlow.value.toInt())
+                    vm.counterRepository.decrement(sliderValueFlow.value.toInt())
                     isLoadingFlow.value = false
                 }
             }
