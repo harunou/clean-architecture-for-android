@@ -81,8 +81,8 @@ fun makeCounterScreenController(): CounterScreenController {
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onPlusButtonClick() = vm.increment()
-            override fun onMinusButtonClick() = vm.decrement()
+            override fun onPlusButtonClick() = vm.repository.increment()
+            override fun onMinusButtonClick() = vm.repository.decrement()
         }
     }
 }

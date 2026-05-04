@@ -11,12 +11,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CounterViewModel @Inject constructor(
-    private val getCounter: GetCounterUseCase,
-    private val incrementCounter: IncrementCounterUseCase,
-    private val decrementCounter: DecrementCounterUseCase,
+    val repository: CounterRepository,
 ) : ViewModel() {
 
-    val uiState: StateFlow<CounterUiState> = getCounter()
+    val uiState: StateFlow<CounterUiState> = repository.observe()
         .map { counter ->
             CounterUiState(
                 count = counter.value,
@@ -33,6 +31,4 @@ class CounterViewModel @Inject constructor(
             initialValue = CounterUiState(),
         )
 
-    fun increment() = incrementCounter()
-    fun decrement() = decrementCounter()
 }
