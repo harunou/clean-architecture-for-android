@@ -8,6 +8,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -93,12 +94,46 @@ fun CounterAmountInput(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Min")
 @Composable
-private fun CounterAmountInputPreview() {
+private fun CounterAmountInputMinPreview() {
     CounterTheme {
         Surface {
             CounterAmountInput()
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Mid")
+@Composable
+private fun CounterAmountInputMidPreview() {
+    CounterTheme {
+        Surface {
+            CompositionLocalProvider(
+                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
+                    override val sliderValue = 5f
+                    override val amount = "5"
+                }
+            ) {
+                CounterAmountInput()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Max")
+@Composable
+private fun CounterAmountInputMaxPreview() {
+    CounterTheme {
+        Surface {
+            CompositionLocalProvider(
+                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
+                    override val sliderValue = 10f
+                    override val amount = "10"
+                }
+            ) {
+                CounterAmountInput()
+            }
         }
     }
 }

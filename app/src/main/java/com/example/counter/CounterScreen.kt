@@ -227,7 +227,11 @@ private fun CounterScreenPositivePreview() {
                     override val count = "5"
                     override val countLabel = "Positive"
                     override val isLoading = false
-                }
+                },
+                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
+                    override val sliderValue = 5f
+                    override val amount = "5"
+                },
             ) {
                 CounterScreen()
             }
@@ -245,7 +249,11 @@ private fun CounterScreenNegativePreview() {
                     override val count = "-3"
                     override val countLabel = "Negative"
                     override val isLoading = false
-                }
+                },
+                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
+                    override val sliderValue = 10f
+                    override val amount = "10"
+                },
             ) {
                 CounterScreen()
             }
