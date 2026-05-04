@@ -39,9 +39,8 @@ import com.example.counter.ui.theme.CounterTheme
 @HiltViewModel
 class CounterViewModel @Inject constructor(
     val repository: CounterRepository,
+    val initializeCounter: InitializeCounterUseCase,
 ) : ViewModel()
-
-enum class CounterLabel { POSITIVE, NEGATIVE, ZERO }
 
 interface CounterScreenPresenter {
     val count: String
@@ -59,6 +58,20 @@ object CounterScreenPresenterMock : CounterScreenPresenter {
     override val count = "0"
     override val countLabel = "Zero"
     override val isLoading = false
+}
+
+class InitializeCounterUseCase @Inject constructor(
+    private val repository: CounterRepository,
+) : UseCase<Unit, MutableStateFlow<Boolean>> {
+    override fun with(params: MutableStateFlow<Boolean>): UseCase.Executor<Unit> = Executor(params)
+
+    private inner class Executor(private val isLoadingFlow: MutableStateFlow<Boolean>) : UseCase.Executor<Unit> {
+        override suspend fun execute(params: Unit) {
+            isLoadingFlow.value = true
+            repository.load()
+            isLoadingFlow.value = false
+        }
+    }
 }
 
 object CounterScreenControllerMock : CounterScreenController {
@@ -115,13 +128,7 @@ fun makeCounterScreenController(isLoadingFlow: MutableStateFlow<Boolean>): Count
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onLaunch() {
-                scope.launch {
-                    isLoadingFlow.value = true
-                    vm.repository.load()
-                    isLoadingFlow.value = false
-                }
-            }
+            override fun onLaunch() { scope.launch { vm.initializeCounter.with(isLoadingFlow).execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
                     isLoadingFlow.value = true
