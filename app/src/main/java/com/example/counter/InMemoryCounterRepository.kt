@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CounterRepositoryImpl @Inject constructor() : CounterRepository {
+class InMemoryCounterRepository @Inject constructor() : CounterRepository {
     private val _counter = MutableStateFlow(Counter())
 
     override fun observe(): Flow<Counter> = _counter.asStateFlow()

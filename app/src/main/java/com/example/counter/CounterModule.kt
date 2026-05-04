@@ -9,5 +9,5 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 abstract class CounterModule {
     @Binds
-    abstract fun bindCounterRepository(impl: CounterRepositoryImpl): CounterRepository
+    abstract fun bindCounterRepository(impl: InMemoryCounterRepository): CounterRepository
 }
