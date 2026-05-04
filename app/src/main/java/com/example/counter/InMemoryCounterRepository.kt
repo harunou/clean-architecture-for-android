@@ -13,6 +13,6 @@ class InMemoryCounterRepository @Inject constructor() : CounterRepository {
 
     override fun observe(): Flow<Counter> = _counter.asStateFlow()
     override suspend fun load() = Unit
-    override suspend fun increment() = _counter.update { it.copy(value = it.value + 1) }
-    override suspend fun decrement() = _counter.update { it.copy(value = it.value - 1) }
+    override suspend fun increment(amount: Int) = _counter.update { it.copy(value = it.value + amount) }
+    override suspend fun decrement(amount: Int) = _counter.update { it.copy(value = it.value - amount) }
 }

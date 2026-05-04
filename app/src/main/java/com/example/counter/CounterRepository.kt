@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 interface CounterRepository {
     fun observe(): Flow<Counter>
     suspend fun load()
-    suspend fun increment()
-    suspend fun decrement()
+    suspend fun increment(amount: Int)
+    suspend fun decrement(amount: Int)
 }
