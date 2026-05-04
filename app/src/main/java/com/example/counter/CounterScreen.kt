@@ -7,13 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +39,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.counter.ui.theme.CounterTheme
 
+val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
+
 @HiltViewModel
 class CounterViewModel @Inject constructor(
     val counterRepository: CounterRepository,
@@ -52,23 +51,18 @@ interface CounterScreenPresenter {
     val count: String
     val countLabel: String
     val isLoading: Boolean
-    val sliderValue: Float
-    val amount: String
 }
 
 interface CounterScreenController {
     fun onLaunch()
     fun onPlusButtonClick()
     fun onMinusButtonClick()
-    fun onSliderValueChange(value: Float)
 }
 
 object CounterScreenPresenterMock : CounterScreenPresenter {
     override val count = "0"
     override val countLabel = "Zero"
     override val isLoading = false
-    override val sliderValue = 1f
-    override val amount = "1"
 }
 
 class InitializeCounterUseCase @AssistedInject constructor(
@@ -91,7 +85,6 @@ object CounterScreenControllerMock : CounterScreenController {
     override fun onLaunch() {}
     override fun onPlusButtonClick() {}
     override fun onMinusButtonClick() {}
-    override fun onSliderValueChange(value: Float) {}
 }
 
 val LocalCounterScreenPresenter = compositionLocalOf<CounterScreenPresenter> {
@@ -105,7 +98,6 @@ val LocalCounterScreenController = compositionLocalOf<CounterScreenController> {
 @Composable
 fun makeCounterScreenPresenter(
     isLoadingFlow: StateFlow<Boolean>,
-    sliderValueFlow: StateFlow<Float>,
 ): CounterScreenPresenter {
     if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
 
@@ -122,7 +114,6 @@ fun makeCounterScreenPresenter(
     }.collectAsStateWithLifecycle()
 
     val isLoading = isLoadingFlow.collectAsStateWithLifecycle()
-    val sliderValue = sliderValueFlow.collectAsStateWithLifecycle()
 
     return remember(vm) {
         object : CounterScreenPresenter {
@@ -133,8 +124,6 @@ fun makeCounterScreenPresenter(
                 else -> "Zero"
             }
             override val isLoading: Boolean get() = isLoading.value
-            override val sliderValue: Float get() = sliderValue.value
-            override val amount: String get() = sliderValue.value.toInt().toString()
         }
     }
 }
@@ -166,7 +155,6 @@ fun makeCounterScreenController(
                     isLoadingFlow.value = false
                 }
             }
-            override fun onSliderValueChange(value: Float) { sliderValueFlow.value = value }
         }
     }
 }
@@ -175,55 +163,45 @@ fun makeCounterScreenController(
 fun CounterScreen(modifier: Modifier = Modifier) {
     val isLoading = remember { MutableStateFlow(false) }
     val sliderValue = remember { MutableStateFlow(1f) }
-    val presenter = makeCounterScreenPresenter(isLoading, sliderValue)
+    val presenter = makeCounterScreenPresenter(isLoading)
     val controller = makeCounterScreenController(isLoading, sliderValue)
 
     LaunchedEffect(controller) { controller.onLaunch() }
 
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+    CompositionLocalProvider(LocalSliderValue provides sliderValue) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = presenter.count,
-                style = MaterialTheme.typography.displayLarge,
-            )
-            Text(
-                text = presenter.countLabel,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(onClick = controller::onMinusButtonClick) { Text("-") }
-                Button(onClick = controller::onPlusButtonClick) { Text("+") }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Amount: ${presenter.amount}",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Slider(
-                value = presenter.sliderValue,
-                onValueChange = controller::onSliderValueChange,
-                valueRange = 1f..10f,
-                steps = 8,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-            )
-        }
-        if (presenter.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
-                contentAlignment = Alignment.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                CircularProgressIndicator()
+                Text(
+                    text = presenter.count,
+                    style = MaterialTheme.typography.displayLarge,
+                )
+                Text(
+                    text = presenter.countLabel,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Button(onClick = controller::onMinusButtonClick) { Text("-") }
+                    Button(onClick = controller::onPlusButtonClick) { Text("+") }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                CounterAmountInput()
+            }
+            if (presenter.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
@@ -249,8 +227,6 @@ private fun CounterScreenPositivePreview() {
                     override val count = "5"
                     override val countLabel = "Positive"
                     override val isLoading = false
-                    override val sliderValue = 3f
-                    override val amount = "3"
                 }
             ) {
                 CounterScreen()
@@ -269,8 +245,6 @@ private fun CounterScreenNegativePreview() {
                     override val count = "-3"
                     override val countLabel = "Negative"
                     override val isLoading = false
-                    override val sliderValue = 1f
-                    override val amount = "1"
                 }
             ) {
                 CounterScreen()
@@ -289,8 +263,6 @@ private fun CounterScreenLoadingPreview() {
                     override val count = "0"
                     override val countLabel = "Zero"
                     override val isLoading = true
-                    override val sliderValue = 1f
-                    override val amount = "1"
                 }
             ) {
                 CounterScreen()
