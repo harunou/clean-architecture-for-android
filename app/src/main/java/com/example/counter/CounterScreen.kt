@@ -12,11 +12,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
@@ -42,6 +44,7 @@ interface CounterScreenPresenter {
 }
 
 interface CounterScreenController {
+    fun onLaunch()
     fun onPlusButtonClick()
     fun onMinusButtonClick()
 }
@@ -52,6 +55,7 @@ object CounterScreenPresenterMock : CounterScreenPresenter {
 }
 
 object CounterScreenControllerMock : CounterScreenController {
+    override fun onLaunch() {}
     override fun onPlusButtonClick() {}
     override fun onMinusButtonClick() {}
 }
@@ -97,11 +101,13 @@ fun makeCounterScreenController(): CounterScreenController {
     if (LocalInspectionMode.current) return LocalCounterScreenController.current
 
     val vm = hiltViewModel<CounterViewModel>()
+    val scope = rememberCoroutineScope()
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onPlusButtonClick() = vm.repository.increment()
-            override fun onMinusButtonClick() = vm.repository.decrement()
+            override fun onLaunch() { scope.launch { vm.repository.load() } }
+            override fun onPlusButtonClick() { scope.launch { vm.repository.increment() } }
+            override fun onMinusButtonClick() { scope.launch { vm.repository.decrement() } }
         }
     }
 }
@@ -110,6 +116,9 @@ fun makeCounterScreenController(): CounterScreenController {
 fun CounterScreen(modifier: Modifier = Modifier) {
     val presenter = makeCounterScreenPresenter()
     val controller = makeCounterScreenController()
+
+    LaunchedEffect(controller) { controller.onLaunch() }
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
