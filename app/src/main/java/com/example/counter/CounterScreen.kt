@@ -1,12 +1,15 @@
 package com.example.counter
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,7 +19,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
@@ -41,6 +46,7 @@ enum class CounterLabel { POSITIVE, NEGATIVE, ZERO }
 interface CounterScreenPresenter {
     val count: String
     val countLabel: String
+    val isLoading: Boolean
 }
 
 interface CounterScreenController {
@@ -52,6 +58,7 @@ interface CounterScreenController {
 object CounterScreenPresenterMock : CounterScreenPresenter {
     override val count = "0"
     override val countLabel = "Zero"
+    override val isLoading = false
 }
 
 object CounterScreenControllerMock : CounterScreenController {
@@ -69,7 +76,7 @@ val LocalCounterScreenController = compositionLocalOf<CounterScreenController> {
 }
 
 @Composable
-fun makeCounterScreenPresenter(): CounterScreenPresenter {
+fun makeCounterScreenPresenter(isLoadingFlow: StateFlow<Boolean>): CounterScreenPresenter {
     if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
 
     val vm = hiltViewModel<CounterViewModel>()
@@ -84,6 +91,8 @@ fun makeCounterScreenPresenter(): CounterScreenPresenter {
             )
     }.collectAsStateWithLifecycle()
 
+    val isLoading = isLoadingFlow.collectAsStateWithLifecycle()
+
     return remember(vm) {
         object : CounterScreenPresenter {
             override val count: String get() = counter.value.value.toString()
@@ -92,12 +101,13 @@ fun makeCounterScreenPresenter(): CounterScreenPresenter {
                 counter.value.value < 0 -> "Negative"
                 else -> "Zero"
             }
+            override val isLoading: Boolean get() = isLoading.value
         }
     }
 }
 
 @Composable
-fun makeCounterScreenController(): CounterScreenController {
+fun makeCounterScreenController(isLoadingFlow: MutableStateFlow<Boolean>): CounterScreenController {
     if (LocalInspectionMode.current) return LocalCounterScreenController.current
 
     val vm = hiltViewModel<CounterViewModel>()
@@ -105,37 +115,70 @@ fun makeCounterScreenController(): CounterScreenController {
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onLaunch() { scope.launch { vm.repository.load() } }
-            override fun onPlusButtonClick() { scope.launch { vm.repository.increment() } }
-            override fun onMinusButtonClick() { scope.launch { vm.repository.decrement() } }
+            override fun onLaunch() {
+                scope.launch {
+                    isLoadingFlow.value = true
+                    vm.repository.load()
+                    isLoadingFlow.value = false
+                }
+            }
+            override fun onPlusButtonClick() {
+                scope.launch {
+                    isLoadingFlow.value = true
+                    vm.repository.increment()
+                    isLoadingFlow.value = false
+                }
+            }
+            override fun onMinusButtonClick() {
+                scope.launch {
+                    isLoadingFlow.value = true
+                    vm.repository.decrement()
+                    isLoadingFlow.value = false
+                }
+            }
         }
     }
 }
 
 @Composable
 fun CounterScreen(modifier: Modifier = Modifier) {
-    val presenter = makeCounterScreenPresenter()
-    val controller = makeCounterScreenController()
+    val isLoading = remember { MutableStateFlow(false) }
+    val presenter = makeCounterScreenPresenter(isLoading)
+    val controller = makeCounterScreenController(isLoading)
 
     LaunchedEffect(controller) { controller.onLaunch() }
 
-    Column(
+    Box(
         modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = presenter.count,
-            style = MaterialTheme.typography.displayLarge,
-        )
-        Text(
-            text = presenter.countLabel,
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = controller::onMinusButtonClick) { Text("-") }
-            Button(onClick = controller::onPlusButtonClick) { Text("+") }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = presenter.count,
+                style = MaterialTheme.typography.displayLarge,
+            )
+            Text(
+                text = presenter.countLabel,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(onClick = controller::onMinusButtonClick) { Text("-") }
+                Button(onClick = controller::onPlusButtonClick) { Text("+") }
+            }
+        }
+        if (presenter.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
@@ -159,6 +202,7 @@ private fun CounterScreenPositivePreview() {
                 LocalCounterScreenPresenter provides object : CounterScreenPresenter {
                     override val count = "5"
                     override val countLabel = "Positive"
+                    override val isLoading = false
                 }
             ) {
                 CounterScreen()
@@ -176,6 +220,25 @@ private fun CounterScreenNegativePreview() {
                 LocalCounterScreenPresenter provides object : CounterScreenPresenter {
                     override val count = "-3"
                     override val countLabel = "Negative"
+                    override val isLoading = false
+                }
+            ) {
+                CounterScreen()
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Loading")
+@Composable
+private fun CounterScreenLoadingPreview() {
+    CounterTheme {
+        Surface {
+            CompositionLocalProvider(
+                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                    override val count = "0"
+                    override val countLabel = "Zero"
+                    override val isLoading = true
                 }
             ) {
                 CounterScreen()
