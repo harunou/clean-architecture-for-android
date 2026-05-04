@@ -1,11 +1,7 @@
 package com.example.counter
 
-interface UseCase<in ExecuteParams, in WithParams> {
-    fun with(params: WithParams): Executor<ExecuteParams>
-
-    interface Executor<in ExecuteParams> {
-        suspend fun execute(params: ExecuteParams)
-    }
+interface UseCase<in Params> {
+    suspend fun execute(params: Params)
 }
 
-suspend fun UseCase.Executor<Unit>.execute() = execute(Unit)
+suspend fun UseCase<Unit>.execute() = execute(Unit)

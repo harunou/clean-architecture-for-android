@@ -31,6 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.compose.ui.platform.LocalInspectionMode
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,7 +45,7 @@ import com.example.counter.ui.theme.CounterTheme
 @HiltViewModel
 class CounterViewModel @Inject constructor(
     val counterRepository: CounterRepository,
-    val initializeCounterUseCase: InitializeCounterUseCase,
+    val initializeCounterUseCaseFactory: InitializeCounterUseCase.Factory,
 ) : ViewModel()
 
 interface CounterScreenPresenter {
@@ -68,17 +71,19 @@ object CounterScreenPresenterMock : CounterScreenPresenter {
     override val amount = "1"
 }
 
-class InitializeCounterUseCase @Inject constructor(
+class InitializeCounterUseCase @AssistedInject constructor(
     private val repository: CounterRepository,
-) : UseCase<Unit, MutableStateFlow<Boolean>> {
-    override fun with(params: MutableStateFlow<Boolean>): UseCase.Executor<Unit> = Executor(params)
+    @Assisted private val isLoadingFlow: MutableStateFlow<Boolean>,
+) : UseCase<Unit> {
+    @AssistedFactory
+    interface Factory {
+        fun make(isLoadingFlow: MutableStateFlow<Boolean>): InitializeCounterUseCase
+    }
 
-    private inner class Executor(private val isLoadingFlow: MutableStateFlow<Boolean>) : UseCase.Executor<Unit> {
-        override suspend fun execute(params: Unit) {
-            isLoadingFlow.value = true
-            repository.load()
-            isLoadingFlow.value = false
-        }
+    override suspend fun execute(params: Unit) {
+        isLoadingFlow.value = true
+        repository.load()
+        isLoadingFlow.value = false
     }
 }
 
@@ -146,7 +151,7 @@ fun makeCounterScreenController(
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onLaunch() { scope.launch { vm.initializeCounterUseCase.with(isLoadingFlow).execute() } }
+            override fun onLaunch() { scope.launch { vm.initializeCounterUseCaseFactory.make(isLoadingFlow).execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
                     isLoadingFlow.value = true
