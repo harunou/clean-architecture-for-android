@@ -40,17 +40,17 @@ val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
 
 class InitializeCounterUseCase @AssistedInject constructor(
     private val repository: CounterRepository,
-    @Assisted private val isLoadingFlow: MutableStateFlow<Boolean>,
+    @Assisted private val isLoadingFlow: MutableStateFlow<Boolean>?,
 ) : UseCase<Unit> {
     @AssistedFactory
     interface Factory {
-        fun make(isLoadingFlow: MutableStateFlow<Boolean>): InitializeCounterUseCase
+        fun make(isLoadingFlow: MutableStateFlow<Boolean>?): InitializeCounterUseCase
     }
 
     override suspend fun execute(params: Unit) {
-        isLoadingFlow.value = true
+        isLoadingFlow?.value = true
         repository.load()
-        isLoadingFlow.value = false
+        isLoadingFlow?.value = false
     }
 }
 
