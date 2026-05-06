@@ -96,11 +96,11 @@ val LocalCounterController = compositionLocalOf<CounterController> {
 
 @Composable
 fun makeCounterPresenter(
+    vm: CounterViewModel,
     isLoadingFlow: StateFlow<Boolean>,
 ): CounterPresenter {
     if (LocalInspectionMode.current) return LocalCounterPresenter.current
 
-    val vm = LocalCounterViewModel.current
     val scope = rememberCoroutineScope()
 
     val counter = remember(vm) {
@@ -129,12 +129,12 @@ fun makeCounterPresenter(
 
 @Composable
 fun makeCounterController(
+    vm: CounterViewModel,
     isLoadingFlow: MutableStateFlow<Boolean>,
     sliderValueFlow: MutableStateFlow<Float>,
 ): CounterController {
     if (LocalInspectionMode.current) return LocalCounterController.current
 
-    val vm = LocalCounterViewModel.current
     val initializeCounterUseCase = vm.initializeCounterUseCaseFactory.make(isLoadingFlow)
     val scope = rememberCoroutineScope()
 
@@ -161,10 +161,11 @@ fun makeCounterController(
 
 @Composable
 fun Counter(modifier: Modifier = Modifier) {
+    val vm = LocalCounterViewModel.current
     val isLoading = remember { MutableStateFlow(false) }
     val sliderValue = remember { MutableStateFlow(1f) }
-    val presenter = makeCounterPresenter(isLoading)
-    val controller = makeCounterController(isLoading, sliderValue)
+    val presenter = makeCounterPresenter(vm, isLoading)
+    val controller = makeCounterController(vm, isLoading, sliderValue)
 
     LaunchedEffect(controller) { controller.onLaunch() }
 

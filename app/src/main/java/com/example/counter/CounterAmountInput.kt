@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.MutableStateFlow
 import com.example.counter.ui.theme.CounterTheme
 
 interface CounterAmountInputPresenter {
@@ -46,10 +47,9 @@ val LocalCounterAmountInputController = compositionLocalOf<CounterAmountInputCon
 }
 
 @Composable
-fun makeCounterAmountInputPresenter(): CounterAmountInputPresenter {
+fun makeCounterAmountInputPresenter(sliderValueFlow: MutableStateFlow<Float>): CounterAmountInputPresenter {
     if (LocalInspectionMode.current) return LocalCounterAmountInputPresenter.current
 
-    val sliderValueFlow = LocalSliderValue.current
     val sliderValue = sliderValueFlow.collectAsStateWithLifecycle()
 
     return remember {
@@ -61,10 +61,8 @@ fun makeCounterAmountInputPresenter(): CounterAmountInputPresenter {
 }
 
 @Composable
-fun makeCounterAmountInputController(): CounterAmountInputController {
+fun makeCounterAmountInputController(sliderValueFlow: MutableStateFlow<Float>): CounterAmountInputController {
     if (LocalInspectionMode.current) return LocalCounterAmountInputController.current
-
-    val sliderValueFlow = LocalSliderValue.current
 
     return remember {
         object : CounterAmountInputController {
@@ -75,8 +73,9 @@ fun makeCounterAmountInputController(): CounterAmountInputController {
 
 @Composable
 fun CounterAmountInput(modifier: Modifier = Modifier) {
-    val presenter = makeCounterAmountInputPresenter()
-    val controller = makeCounterAmountInputController()
+    val sliderValueFlow = LocalSliderValue.current
+    val presenter = makeCounterAmountInputPresenter(sliderValueFlow)
+    val controller = makeCounterAmountInputController(sliderValueFlow)
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "Amount: ${presenter.amount}",
