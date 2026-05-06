@@ -25,27 +25,18 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.counter.ui.theme.CounterTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
-
-@HiltViewModel
-class CounterViewModel @Inject constructor(
-    val counterRepository: CounterRepository,
-    val initializeCounterUseCaseFactory: InitializeCounterUseCase.Factory,
-) : ViewModel()
 
 class InitializeCounterUseCase @AssistedInject constructor(
     private val repository: CounterRepository,
@@ -101,7 +92,7 @@ fun makeCounterScreenPresenter(
 ): CounterScreenPresenter {
     if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
 
-    val vm = hiltViewModel<CounterViewModel>()
+    val vm = hiltViewModel<CounterScreenViewModel>()
     val scope = rememberCoroutineScope()
 
     val counter = remember(vm) {
@@ -135,7 +126,7 @@ fun makeCounterScreenController(
 ): CounterScreenController {
     if (LocalInspectionMode.current) return LocalCounterScreenController.current
 
-    val vm = hiltViewModel<CounterViewModel>()
+    val vm = hiltViewModel<CounterScreenViewModel>()
     val scope = rememberCoroutineScope()
 
     return remember(vm) {

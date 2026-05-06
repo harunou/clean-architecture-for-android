@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.counter.ui.theme.CounterTheme
 
@@ -49,6 +50,7 @@ val LocalCounterAmountInputController = compositionLocalOf<CounterAmountInputCon
 fun makeCounterAmountInputPresenter(): CounterAmountInputPresenter {
     if (LocalInspectionMode.current) return LocalCounterAmountInputPresenter.current
 
+    val vm = hiltViewModel<CounterScreenViewModel>()
     val sliderValueFlow = LocalSliderValue.current
     val sliderValue = sliderValueFlow.collectAsStateWithLifecycle()
 
@@ -64,6 +66,7 @@ fun makeCounterAmountInputPresenter(): CounterAmountInputPresenter {
 fun makeCounterAmountInputController(): CounterAmountInputController {
     if (LocalInspectionMode.current) return LocalCounterAmountInputController.current
 
+    val vm = hiltViewModel<CounterScreenViewModel>()
     val sliderValueFlow = LocalSliderValue.current
 
     return remember {
