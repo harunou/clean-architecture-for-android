@@ -40,9 +40,12 @@ interface CounterViewModel {
     val initializeCounterUseCaseFactory: InitializeCounterUseCase.Factory
 }
 
-val LocalCounterViewModel = compositionLocalOf<CounterViewModel> {
-    error("CounterScreenViewModel not provided")
+object CounterViewModelMock : CounterViewModel {
+    override val counterRepository: CounterRepository get() = error("not available in preview")
+    override val initializeCounterUseCaseFactory: InitializeCounterUseCase.Factory get() = error("not available in preview")
 }
+
+val LocalCounterViewModel = compositionLocalOf<CounterViewModel> { CounterViewModelMock }
 
 val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
 
