@@ -127,11 +127,12 @@ fun makeCounterScreenController(
     if (LocalInspectionMode.current) return LocalCounterScreenController.current
 
     val vm = hiltViewModel<CounterScreenViewModel>()
+    val initializeCounterUseCase = vm.initializeCounterUseCaseFactory.make(isLoadingFlow)
     val scope = rememberCoroutineScope()
 
     return remember(vm) {
         object : CounterScreenController {
-            override fun onLaunch() { scope.launch { vm.initializeCounterUseCaseFactory.make(isLoadingFlow).execute() } }
+            override fun onLaunch() { scope.launch { initializeCounterUseCase.execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
                     isLoadingFlow.value = true
