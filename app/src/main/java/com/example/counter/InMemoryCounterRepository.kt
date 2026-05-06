@@ -9,9 +9,9 @@ import javax.inject.Singleton
 
 @Singleton
 class InMemoryCounterRepository @Inject constructor() : CounterRepository {
-    private val _counter = MutableStateFlow(Counter())
+    private val _counter = MutableStateFlow(CounterEntity())
 
-    override fun observe(): Flow<Counter> = _counter.asStateFlow()
+    override fun observe(): Flow<CounterEntity> = _counter.asStateFlow()
     override suspend fun load() = Unit
     override suspend fun increment(amount: Int) = _counter.update { it.copy(value = it.value + amount) }
     override suspend fun decrement(amount: Int) = _counter.update { it.copy(value = it.value - amount) }
