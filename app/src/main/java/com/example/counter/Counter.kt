@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.counter.ui.theme.CounterTheme
 import dagger.assisted.Assisted
@@ -35,6 +34,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+interface CounterViewModel {
+    val counterRepository: CounterRepository
+    val initializeCounterUseCaseFactory: InitializeCounterUseCase.Factory
+}
+
+val LocalCounterViewModel = compositionLocalOf<CounterViewModel> {
+    error("CounterScreenViewModel not provided")
+}
 
 val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
 
@@ -54,45 +62,45 @@ class InitializeCounterUseCase @AssistedInject constructor(
     }
 }
 
-interface CounterScreenPresenter {
+interface CounterPresenter {
     val count: String
     val countLabel: String
     val isLoading: Boolean
 }
 
-interface CounterScreenController {
+interface CounterController {
     fun onLaunch()
     fun onPlusButtonClick()
     fun onMinusButtonClick()
 }
 
-object CounterScreenPresenterMock : CounterScreenPresenter {
+object CounterPresenterMock : CounterPresenter {
     override val count = "0"
     override val countLabel = "Zero"
     override val isLoading = false
 }
 
-object CounterScreenControllerMock : CounterScreenController {
+object CounterControllerMock : CounterController {
     override fun onLaunch() {}
     override fun onPlusButtonClick() {}
     override fun onMinusButtonClick() {}
 }
 
-val LocalCounterScreenPresenter = compositionLocalOf<CounterScreenPresenter> {
-    CounterScreenPresenterMock
+val LocalCounterPresenter = compositionLocalOf<CounterPresenter> {
+    CounterPresenterMock
 }
 
-val LocalCounterScreenController = compositionLocalOf<CounterScreenController> {
-    CounterScreenControllerMock
+val LocalCounterController = compositionLocalOf<CounterController> {
+    CounterControllerMock
 }
 
 @Composable
-fun makeCounterScreenPresenter(
+fun makeCounterPresenter(
     isLoadingFlow: StateFlow<Boolean>,
-): CounterScreenPresenter {
-    if (LocalInspectionMode.current) return LocalCounterScreenPresenter.current
+): CounterPresenter {
+    if (LocalInspectionMode.current) return LocalCounterPresenter.current
 
-    val vm = hiltViewModel<CounterScreenViewModel>()
+    val vm = LocalCounterViewModel.current
     val scope = rememberCoroutineScope()
 
     val counter = remember(vm) {
@@ -107,7 +115,7 @@ fun makeCounterScreenPresenter(
     val isLoading = isLoadingFlow.collectAsStateWithLifecycle()
 
     return remember(vm) {
-        object : CounterScreenPresenter {
+        object : CounterPresenter {
             override val count: String get() = counter.value.value.toString()
             override val countLabel: String get() = when {
                 counter.value.value > 0 -> "Positive"
@@ -120,18 +128,18 @@ fun makeCounterScreenPresenter(
 }
 
 @Composable
-fun makeCounterScreenController(
+fun makeCounterController(
     isLoadingFlow: MutableStateFlow<Boolean>,
     sliderValueFlow: MutableStateFlow<Float>,
-): CounterScreenController {
-    if (LocalInspectionMode.current) return LocalCounterScreenController.current
+): CounterController {
+    if (LocalInspectionMode.current) return LocalCounterController.current
 
-    val vm = hiltViewModel<CounterScreenViewModel>()
+    val vm = LocalCounterViewModel.current
     val initializeCounterUseCase = vm.initializeCounterUseCaseFactory.make(isLoadingFlow)
     val scope = rememberCoroutineScope()
 
     return remember(vm) {
-        object : CounterScreenController {
+        object : CounterController {
             override fun onLaunch() { scope.launch { initializeCounterUseCase.execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
@@ -155,8 +163,8 @@ fun makeCounterScreenController(
 fun Counter(modifier: Modifier = Modifier) {
     val isLoading = remember { MutableStateFlow(false) }
     val sliderValue = remember { MutableStateFlow(1f) }
-    val presenter = makeCounterScreenPresenter(isLoading)
-    val controller = makeCounterScreenController(isLoading, sliderValue)
+    val presenter = makeCounterPresenter(isLoading)
+    val controller = makeCounterController(isLoading, sliderValue)
 
     LaunchedEffect(controller) { controller.onLaunch() }
 
@@ -215,7 +223,7 @@ private fun CounterPositivePreview() {
     CounterTheme {
         Surface {
             CompositionLocalProvider(
-                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                LocalCounterPresenter provides object : CounterPresenter {
                     override val count = "5"
                     override val countLabel = "Positive"
                     override val isLoading = false
@@ -237,7 +245,7 @@ private fun CounterNegativePreview() {
     CounterTheme {
         Surface {
             CompositionLocalProvider(
-                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                LocalCounterPresenter provides object : CounterPresenter {
                     override val count = "-3"
                     override val countLabel = "Negative"
                     override val isLoading = false
@@ -259,7 +267,7 @@ private fun CounterLoadingPreview() {
     CounterTheme {
         Surface {
             CompositionLocalProvider(
-                LocalCounterScreenPresenter provides object : CounterScreenPresenter {
+                LocalCounterPresenter provides object : CounterPresenter {
                     override val count = "0"
                     override val countLabel = "Zero"
                     override val isLoading = true
