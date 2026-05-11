@@ -51,17 +51,17 @@ val LocalSliderValue = compositionLocalOf { MutableStateFlow(1f) }
 
 class InitializeCounterUseCase @AssistedInject constructor(
     private val repository: CounterRepository,
-    @Assisted private val isLoadingFlow: MutableStateFlow<Boolean>?,
+    @Assisted private val isCounterLoadingFlow: MutableStateFlow<Boolean>?,
 ) : UseCase<Unit> {
     @AssistedFactory
     interface Factory {
-        fun make(isLoadingFlow: MutableStateFlow<Boolean>?): InitializeCounterUseCase
+        fun make(isCounterLoadingFlow: MutableStateFlow<Boolean>?): InitializeCounterUseCase
     }
 
     override suspend fun execute(params: Unit) {
-        isLoadingFlow?.value = true
+        isCounterLoadingFlow?.value = true
         repository.load()
-        isLoadingFlow?.value = false
+        isCounterLoadingFlow?.value = false
     }
 }
 
@@ -72,7 +72,7 @@ interface CounterPresenter {
 }
 
 interface CounterController {
-    fun onLaunch()
+    fun onCounterComposableLaunched()
     fun onPlusButtonClick()
     fun onMinusButtonClick()
 }
@@ -84,7 +84,7 @@ object CounterPresenterMock : CounterPresenter {
 }
 
 object CounterControllerMock : CounterController {
-    override fun onLaunch() {}
+    override fun onCounterComposableLaunched() {}
     override fun onPlusButtonClick() {}
     override fun onMinusButtonClick() {}
 }
@@ -100,7 +100,7 @@ val LocalCounterController = compositionLocalOf<CounterController> {
 @Composable
 fun makeCounterPresenter(
     vm: CounterViewModel,
-    isLoadingFlow: StateFlow<Boolean>,
+    isCounterLoadingFlow: StateFlow<Boolean>,
 ): CounterPresenter {
     if (LocalInspectionMode.current) return LocalCounterPresenter.current
 
@@ -115,7 +115,7 @@ fun makeCounterPresenter(
             )
     }.collectAsStateWithLifecycle()
 
-    val isLoading = isLoadingFlow.collectAsStateWithLifecycle()
+    val isLoading = isCounterLoadingFlow.collectAsStateWithLifecycle()
 
     return remember(vm) {
         object : CounterPresenter {
@@ -133,29 +133,29 @@ fun makeCounterPresenter(
 @Composable
 fun makeCounterController(
     vm: CounterViewModel,
-    isLoadingFlow: MutableStateFlow<Boolean>,
+    isCounterLoadingFlow: MutableStateFlow<Boolean>,
     sliderValueFlow: MutableStateFlow<Float>,
 ): CounterController {
     if (LocalInspectionMode.current) return LocalCounterController.current
 
-    val initializeCounterUseCase = vm.initializeCounterUseCaseFactory.make(isLoadingFlow)
+    val initializeCounterUseCase = vm.initializeCounterUseCaseFactory.make(isCounterLoadingFlow)
     val scope = rememberCoroutineScope()
 
     return remember(vm) {
         object : CounterController {
-            override fun onLaunch() { scope.launch { initializeCounterUseCase.execute() } }
+            override fun onCounterComposableLaunched() { scope.launch { initializeCounterUseCase.execute() } }
             override fun onPlusButtonClick() {
                 scope.launch {
-                    isLoadingFlow.value = true
+                    isCounterLoadingFlow.value = true
                     vm.counterRepository.increment(sliderValueFlow.value.toInt())
-                    isLoadingFlow.value = false
+                    isCounterLoadingFlow.value = false
                 }
             }
             override fun onMinusButtonClick() {
                 scope.launch {
-                    isLoadingFlow.value = true
+                    isCounterLoadingFlow.value = true
                     vm.counterRepository.decrement(sliderValueFlow.value.toInt())
-                    isLoadingFlow.value = false
+                    isCounterLoadingFlow.value = false
                 }
             }
         }
@@ -165,12 +165,12 @@ fun makeCounterController(
 @Composable
 fun Counter(modifier: Modifier = Modifier) {
     val vm = LocalCounterViewModel.current
-    val isLoading = remember { MutableStateFlow(false) }
+    val isCounterLoadingFlow = remember { MutableStateFlow(false) }
     val sliderValue = remember { MutableStateFlow(1f) }
-    val presenter = makeCounterPresenter(vm, isLoading)
-    val controller = makeCounterController(vm, isLoading, sliderValue)
+    val presenter = makeCounterPresenter(vm, isCounterLoadingFlow)
+    val controller = makeCounterController(vm, isCounterLoadingFlow, sliderValue)
 
-    LaunchedEffect(controller) { controller.onLaunch() }
+    LaunchedEffect(controller) { controller.onCounterComposableLaunched() }
 
     CompositionLocalProvider(LocalSliderValue provides sliderValue) {
         Box(
