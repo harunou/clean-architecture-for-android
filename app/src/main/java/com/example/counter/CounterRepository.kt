@@ -3,7 +3,8 @@ package com.example.counter
 import kotlinx.coroutines.flow.Flow
 
 interface CounterRepository {
-    fun observe(): Flow<CounterEntity>
+    val counter: Flow<CounterEntity>
+    val isLoading: Flow<Boolean>
     suspend fun load()
     suspend fun increment(amount: Int)
     suspend fun decrement(amount: Int)
