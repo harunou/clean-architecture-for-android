@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.counter.amountinput.AmountInput
 import com.example.counter.ui.theme.CounterTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -195,7 +196,7 @@ fun Counter(modifier: Modifier = Modifier) {
                     Button(onClick = controller::onPlusButtonClick) { Text("+") }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                CounterAmountInput()
+                AmountInput()
             }
             if (presenter.isLoading) {
                 Box(
@@ -232,10 +233,6 @@ private fun CounterPositivePreview() {
                     override val countLabel = "Positive"
                     override val isLoading = false
                 },
-                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
-                    override val sliderValue = 5f
-                    override val amount = "5"
-                },
             ) {
                 Counter()
             }
@@ -253,10 +250,6 @@ private fun CounterNegativePreview() {
                     override val count = "-3"
                     override val countLabel = "Negative"
                     override val isLoading = false
-                },
-                LocalCounterAmountInputPresenter provides object : CounterAmountInputPresenter {
-                    override val sliderValue = 10f
-                    override val amount = "10"
                 },
             ) {
                 Counter()
