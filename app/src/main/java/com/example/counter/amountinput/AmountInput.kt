@@ -3,6 +3,7 @@ package com.example.counter.amountinput
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -48,6 +49,11 @@ class AmountInputViewModel @Inject constructor(
 // Wires AmountInputViewModel to AmountInputUi.
 @Composable
 fun AmountInput(modifier: Modifier = Modifier) {
+    if (LocalInspectionMode.current) {
+        AmountInputUi(sliderValue = 1f, labelAmount = 1, onSliderValueChange = {}, modifier = modifier)
+        return
+    }
+
     val viewModel: AmountInputViewModel = hiltViewModel(
         viewModelStoreOwner = rememberViewModelStoreOwner(),
     )
