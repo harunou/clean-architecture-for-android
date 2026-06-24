@@ -43,9 +43,6 @@ class CounterViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "Zero")
 
-    val isProgressIndicatorVisible: StateFlow<Boolean> = counterRepository.isLoading
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
-
     fun onIncrementClick() {
         viewModelScope.launch {
             counterRepository.increment(amountStore.sliderValue.value.toInt())
@@ -64,8 +61,7 @@ class CounterViewModel @Inject constructor(
 @Composable
 fun Counter(correction: Int, modifier: Modifier = Modifier) {
     if (LocalInspectionMode.current) {
-        CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {
-        }, onDecrementClick = {}, modifier = modifier)
+        CounterUi(count = "0", countLabel = "Zero", onIncrementClick = {}, onDecrementClick = {}, modifier = modifier)
         return
     }
 
@@ -77,12 +73,10 @@ fun Counter(correction: Int, modifier: Modifier = Modifier) {
 
     val count by viewModel.count.collectAsStateWithLifecycle()
     val countLabel by viewModel.countLabel.collectAsStateWithLifecycle()
-    val isProgressIndicatorVisible by viewModel.isProgressIndicatorVisible.collectAsStateWithLifecycle()
 
     CounterUi(
         count = count,
         countLabel = countLabel,
-        isProgressIndicatorVisible = isProgressIndicatorVisible,
         onIncrementClick = viewModel::onIncrementClick,
         onDecrementClick = viewModel::onDecrementClick,
         modifier = modifier,

@@ -1,6 +1,5 @@
 package com.example.counter.feature.counter.counter
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,7 +23,6 @@ import com.example.counter.ui.theme.CounterTheme
 fun CounterUi(
     count: String,
     countLabel: String,
-    isProgressIndicatorVisible: Boolean,
     onIncrementClick: () -> Unit,
     onDecrementClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -54,16 +51,6 @@ fun CounterUi(
             Spacer(modifier = Modifier.height(16.dp))
             AmountInput()
         }
-        if (isProgressIndicatorVisible) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f)),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
-        }
     }
 }
 
@@ -72,7 +59,7 @@ fun CounterUi(
 private fun CounterZeroPreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {
+            CounterUi(count = "0", countLabel = "Zero", onIncrementClick = {
             }, onDecrementClick = {})
         }
     }
@@ -83,7 +70,7 @@ private fun CounterZeroPreview() {
 private fun CounterPositivePreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "5", countLabel = "Positive", isProgressIndicatorVisible = false, onIncrementClick = {
+            CounterUi(count = "5", countLabel = "Positive", onIncrementClick = {
             }, onDecrementClick = {})
         }
     }
@@ -94,18 +81,7 @@ private fun CounterPositivePreview() {
 private fun CounterNegativePreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "-3", countLabel = "Negative", isProgressIndicatorVisible = false, onIncrementClick = {
-            }, onDecrementClick = {})
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "Loading")
-@Composable
-private fun CounterLoadingPreview() {
-    CounterTheme {
-        Surface {
-            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = true, onIncrementClick = {
+            CounterUi(count = "-3", countLabel = "Negative", onIncrementClick = {
             }, onDecrementClick = {})
         }
     }
