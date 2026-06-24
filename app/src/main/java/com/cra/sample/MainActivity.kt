@@ -1,4 +1,4 @@
-package com.example.counter
+package com.cra.sample
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.example.counter.feature.counter.CounterScreen
-import com.example.counter.ui.theme.CounterTheme
+import com.cra.sample.feature.counter.CounterScreen
+import com.cra.sample.ui.theme.CounterTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

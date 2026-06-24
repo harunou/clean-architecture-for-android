@@ -1,7 +1,7 @@
-package com.example.counter
+package com.cra.sample
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class CounterApplication : Application()
+class SampleApplication : Application()

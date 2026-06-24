@@ -1,4 +1,4 @@
-package com.example.counter.feature.counter.counter
+package com.cra.sample.feature.counter.counter
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.counter.feature.counter.amountinput.AmountInput
-import com.example.counter.ui.theme.CounterTheme
+import com.cra.sample.feature.counter.amountinput.AmountInput
+import com.cra.sample.ui.theme.CounterTheme
 
 @Composable
 fun CounterUi(

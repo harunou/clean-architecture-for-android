@@ -1,11 +1,11 @@
-package com.example.counter.feature.counter
+package com.cra.sample.feature.counter
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.counter.feature.counter.counter.Counter
-import com.example.counter.ui.theme.CounterTheme
+import com.cra.sample.feature.counter.counter.Counter
+import com.cra.sample.ui.theme.CounterTheme
 
 @Composable
 fun CounterScreen(modifier: Modifier = Modifier) {

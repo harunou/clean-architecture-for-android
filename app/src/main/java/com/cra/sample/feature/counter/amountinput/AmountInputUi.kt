@@ -1,4 +1,4 @@
-package com.example.counter.feature.counter.amountinput
+package com.cra.sample.feature.counter.amountinput
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.counter.ui.theme.CounterTheme
+import com.cra.sample.ui.theme.CounterTheme
 
 @Composable
 fun AmountInputUi(

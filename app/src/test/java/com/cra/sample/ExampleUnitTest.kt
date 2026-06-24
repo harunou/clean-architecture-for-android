@@ -1,4 +1,4 @@
-package com.example.counter
+package com.cra.sample
 
 import org.junit.Assert.*
 import org.junit.Test

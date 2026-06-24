@@ -1,4 +1,4 @@
-package com.example.counter.ui.theme
+package com.cra.sample.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

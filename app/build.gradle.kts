@@ -23,11 +23,11 @@ spotless {
 }
 
 android {
-    namespace = "com.example.counter"
+    namespace = "com.cra.sample"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.counter"
+        applicationId = "com.cra.sample"
         minSdk = 24
         targetSdk = 37
         versionCode = 1

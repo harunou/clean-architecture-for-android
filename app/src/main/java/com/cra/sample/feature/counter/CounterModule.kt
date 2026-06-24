@@ -1,5 +1,7 @@
-package com.example.counter.feature.counter
+package com.cra.sample.feature.counter
 
+import com.cra.sample.feature.counter.repository.CounterRepository
+import com.cra.sample.feature.counter.repository.InMemoryCounterRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

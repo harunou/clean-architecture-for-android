@@ -1,4 +1,4 @@
-package com.example.counter.feature.counter
+package com.cra.sample.feature.counter
 
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,13 +8,13 @@ import javax.inject.Inject
 
 // Scope to the counter navigation destination once Navigation Compose is introduced
 @ActivityRetainedScoped
-class AmountStore
+class CounterStore
 @Inject
 constructor() {
-    private val _sliderValue = MutableStateFlow(1f)
-    val sliderValue: StateFlow<Float> = _sliderValue.asStateFlow()
+    private val _incrementAmount = MutableStateFlow(1f)
+    val incrementAmount: StateFlow<Float> = _incrementAmount.asStateFlow()
 
-    fun setSliderValue(value: Float) {
-        _sliderValue.value = value
+    fun setIncrementAmount(value: Float) {
+        _incrementAmount.value = value
     }
 }

@@ -1,4 +1,4 @@
-package com.example.counter
+package com.cra.sample
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -20,6 +20,6 @@ class ExampleInstrumentedTest {
             InstrumentationRegistry
                 .getInstrumentation()
                 .targetContext
-        assertEquals("com.example.counter", appContext.packageName)
+        assertEquals("com.cra.sample", appContext.packageName)
     }
 }

@@ -1,4 +1,4 @@
-package com.example.counter.feature.counter.amountinput
+package com.cra.sample.feature.counter.amountinput
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
-import com.example.counter.feature.counter.AmountStore
+import com.cra.sample.feature.counter.CounterStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,16 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 // --- COMPONENT ---
-
-@HiltViewModel
-class AmountInputViewModel @Inject constructor(private val store: AmountStore) : ViewModel() {
-    val sliderValue: StateFlow<Float> = store.sliderValue
-    val labelAmount: StateFlow<Int> = store.sliderValue
-        .map { it.toInt() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 1)
-
-    fun onSliderValueChange(value: Float) = store.setSliderValue(value)
-}
 
 // Public entry point of the component; wires AmountInputViewModel to AmountInputUi.
 // This is structural boilerplate - a candidate for compile-time code generation.
@@ -51,4 +41,16 @@ fun AmountInput(modifier: Modifier = Modifier) {
         onSliderValueChange = viewModel::onSliderValueChange,
         modifier = modifier,
     )
+}
+
+@HiltViewModel
+class AmountInputViewModel @Inject constructor(private val store: CounterStore) : ViewModel() {
+    // Presenter
+    val sliderValue: StateFlow<Float> = store.incrementAmount
+    val labelAmount: StateFlow<Int> = store.incrementAmount
+        .map { it.toInt() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 1)
+
+    // Controller
+    fun onSliderValueChange(value: Float) = store.setIncrementAmount(value)
 }
