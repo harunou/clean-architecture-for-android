@@ -72,7 +72,8 @@ fun CounterUi(
 private fun CounterZeroPreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {}, onDecrementClick = {})
+            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {
+            }, onDecrementClick = {})
         }
     }
 }
@@ -82,7 +83,8 @@ private fun CounterZeroPreview() {
 private fun CounterPositivePreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "5", countLabel = "Positive", isProgressIndicatorVisible = false, onIncrementClick = {}, onDecrementClick = {})
+            CounterUi(count = "5", countLabel = "Positive", isProgressIndicatorVisible = false, onIncrementClick = {
+            }, onDecrementClick = {})
         }
     }
 }
@@ -92,7 +94,8 @@ private fun CounterPositivePreview() {
 private fun CounterNegativePreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "-3", countLabel = "Negative", isProgressIndicatorVisible = false, onIncrementClick = {}, onDecrementClick = {})
+            CounterUi(count = "-3", countLabel = "Negative", isProgressIndicatorVisible = false, onIncrementClick = {
+            }, onDecrementClick = {})
         }
     }
 }
@@ -102,7 +105,8 @@ private fun CounterNegativePreview() {
 private fun CounterLoadingPreview() {
     CounterTheme {
         Surface {
-            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = true, onIncrementClick = {}, onDecrementClick = {})
+            CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = true, onIncrementClick = {
+            }, onDecrementClick = {})
         }
     }
 }

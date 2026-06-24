@@ -7,36 +7,20 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import com.example.counter.feature.counter.AmountStore
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.SharingStarted
-import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
-
-// --- DOMAIN ---
-
-@ViewModelScoped
-class Store @Inject constructor() {
-    private val _sliderValue = MutableStateFlow(1f)
-    val sliderValue: StateFlow<Float> = _sliderValue.asStateFlow()
-
-    fun setSliderValue(value: Float) {
-        _sliderValue.value = value
-    }
-}
 
 // --- COMPONENT ---
 
 @HiltViewModel
-class AmountInputViewModel @Inject constructor(
-    private val store: Store,
-) : ViewModel() {
+class AmountInputViewModel @Inject constructor(private val store: AmountStore) : ViewModel() {
     val sliderValue: StateFlow<Float> = store.sliderValue
     val labelAmount: StateFlow<Int> = store.sliderValue
         .map { it.toInt() }
@@ -45,12 +29,13 @@ class AmountInputViewModel @Inject constructor(
     fun onSliderValueChange(value: Float) = store.setSliderValue(value)
 }
 
-// Public entry point of the component
-// Wires AmountInputViewModel to AmountInputUi.
+// Public entry point of the component; wires AmountInputViewModel to AmountInputUi.
+// This is structural boilerplate - a candidate for compile-time code generation.
 @Composable
 fun AmountInput(modifier: Modifier = Modifier) {
     if (LocalInspectionMode.current) {
-        AmountInputUi(sliderValue = 1f, labelAmount = 1, onSliderValueChange = {}, modifier = modifier)
+        AmountInputUi(sliderValue = 1f, labelAmount = 1, onSliderValueChange = {
+        }, modifier = modifier)
         return
     }
 

@@ -3,6 +3,23 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.spotless)
+}
+
+spotless {
+    kotlin {
+        ktlint().editorConfigOverride(
+            mapOf(
+                "ktlint_standard_function-naming" to "disabled",
+                "ktlint_standard_backing-property-naming" to "disabled",
+                "max_line_length" to "120",
+            ),
+        )
+        target("src/**/*.kt")
+    }
+    kotlinGradle {
+        ktlint()
+    }
 }
 
 android {
@@ -24,7 +41,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }

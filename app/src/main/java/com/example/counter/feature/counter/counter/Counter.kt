@@ -9,9 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
+import com.example.counter.core.Input
+import com.example.counter.core.ProvideInput
+import com.example.counter.feature.counter.AmountStore
 import com.example.counter.feature.counter.CounterRepository
-import com.example.counter.feature.counter.Input
-import com.example.counter.feature.counter.ProvideInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +26,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CounterViewModel @Inject constructor(
     private val counterRepository: CounterRepository,
+    private val amountStore: AmountStore,
 ) : ViewModel() {
     val correction = Input(0)
 
@@ -44,18 +46,26 @@ class CounterViewModel @Inject constructor(
     val isProgressIndicatorVisible: StateFlow<Boolean> = counterRepository.isLoading
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
-    fun onIncrementClick() { viewModelScope.launch { counterRepository.increment(1) } }
-    fun onDecrementClick() { viewModelScope.launch { counterRepository.decrement(1) } }
+    fun onIncrementClick() {
+        viewModelScope.launch {
+            counterRepository.increment(amountStore.sliderValue.value.toInt())
+        }
+    }
+
+    fun onDecrementClick() {
+        viewModelScope.launch {
+            counterRepository.decrement(amountStore.sliderValue.value.toInt())
+        }
+    }
 }
 
-// Public entry point of the component; wires CounterViewModel to CounterUi.
+// Public entry point of the component; wires AmountInputViewModel to AmountInputUi.
+// This is structural boilerplate - a candidate for compile-time code generation.
 @Composable
-fun Counter(
-    correction: Int = 0,
-    modifier: Modifier = Modifier,
-) {
+fun Counter(correction: Int, modifier: Modifier = Modifier) {
     if (LocalInspectionMode.current) {
-        CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {}, onDecrementClick = {}, modifier = modifier)
+        CounterUi(count = "0", countLabel = "Zero", isProgressIndicatorVisible = false, onIncrementClick = {
+        }, onDecrementClick = {}, modifier = modifier)
         return
     }
 
