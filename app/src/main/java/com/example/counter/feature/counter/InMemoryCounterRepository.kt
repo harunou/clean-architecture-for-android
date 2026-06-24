@@ -1,4 +1,4 @@
-package com.example.counter
+package com.example.counter.feature.counter
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

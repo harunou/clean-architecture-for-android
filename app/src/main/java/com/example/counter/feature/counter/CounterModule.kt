@@ -1,4 +1,4 @@
-package com.example.counter
+package com.example.counter.feature.counter
 
 import dagger.Binds
 import dagger.Module

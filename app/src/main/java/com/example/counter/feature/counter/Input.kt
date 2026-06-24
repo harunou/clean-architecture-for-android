@@ -1,4 +1,4 @@
-package com.example.counter
+package com.example.counter.feature.counter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect

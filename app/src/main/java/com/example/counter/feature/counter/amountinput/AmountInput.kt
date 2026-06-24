@@ -1,4 +1,4 @@
-package com.example.counter.amountinput
+package com.example.counter.feature.counter.amountinput
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

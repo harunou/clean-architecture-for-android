@@ -1,4 +1,4 @@
-package com.example.counter.counter
+package com.example.counter.feature.counter.counter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.counter.amountinput.AmountInput
+import com.example.counter.feature.counter.amountinput.AmountInput
 import com.example.counter.ui.theme.CounterTheme
 
 @Composable

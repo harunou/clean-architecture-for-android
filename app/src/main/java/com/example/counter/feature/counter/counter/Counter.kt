@@ -1,4 +1,4 @@
-package com.example.counter.counter
+package com.example.counter.feature.counter.counter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
-import com.example.counter.CounterRepository
-import com.example.counter.Input
-import com.example.counter.ProvideInput
+import com.example.counter.feature.counter.CounterRepository
+import com.example.counter.feature.counter.Input
+import com.example.counter.feature.counter.ProvideInput
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
