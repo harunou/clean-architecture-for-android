@@ -61,7 +61,7 @@ class CounterViewModel @Inject constructor(
     // Presenter
     val count: StateFlow<String> = combine(counterRepository.counter, correction.flow) { entity, correction ->
         (entity.value + correction).toString()
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "0")
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, "0")
 
     val countLabel: StateFlow<String> = combine(counterRepository.counter, correction.flow) { entity, correction ->
         val total = entity.value + correction
@@ -70,7 +70,7 @@ class CounterViewModel @Inject constructor(
             total < 0 -> "Negative"
             else -> "Zero"
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), "Zero")
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, "Zero")
 
     // Controller
     fun onIncrementClick() {

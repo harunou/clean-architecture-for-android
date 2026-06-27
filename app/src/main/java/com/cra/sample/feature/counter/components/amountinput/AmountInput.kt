@@ -49,7 +49,7 @@ class AmountInputViewModel @Inject constructor(private val store: CounterStore) 
     val sliderValue: StateFlow<Float> = store.incrementAmount
     val labelAmount: StateFlow<Int> = store.incrementAmount
         .map { it.toInt() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 1)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
 
     // Controller
     fun onSliderValueChange(value: Float) = store.setIncrementAmount(value)
