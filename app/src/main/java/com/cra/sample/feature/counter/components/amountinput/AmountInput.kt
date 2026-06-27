@@ -62,6 +62,7 @@ fun AmountInput(modifier: Modifier = Modifier) {
 class AmountInputViewModel @Inject constructor(private val store: CounterStore) : ViewModel() {
     // Presenter
     val sliderValue: StateFlow<Float> = store.incrementAmount
+        .stateIn(viewModelScope, SharingStarted.Eagerly, 0f)
     val labelAmount: StateFlow<Int> = store.incrementAmount
         .map { it.toInt() }
         .stateIn(viewModelScope, SharingStarted.Eagerly, 0)
