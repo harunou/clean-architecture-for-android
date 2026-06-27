@@ -22,9 +22,23 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // --- COMPONENT ---
-
-// Public entry point of the component; wires CounterViewModel to CounterUi.
-// This is structural boilerplate - a candidate for compile-time code generation.
+//
+// A "component" is a self-contained UI unit built from three parts that live together
+// in this package:
+//   1. Counter          - the component binder (the public entry point). It is the
+//                         @Composable that connects the component class to its component
+//                         template. Its code is structural boilerplate - a candidate for
+//                         compile-time code generation.
+//   2. CounterViewModel - the component class. It manages the component's state and
+//                         handles user interactions by coordinating between the component
+//                         template and its collaborators. It contains UI-related logic and
+//                         delegates business logic, data access, and other non-UI
+//                         responsibilities to collaborators such as stores, repositories,
+//                         usecases, etc.
+//   3. CounterUi        - the component template. It binds to the component class's props to
+//                         display data, and captures user interactions to invoke methods on
+//                         the component class. It accepts only primitive values and plain
+//                         data objects.
 @Composable
 fun Counter(correction: Int, modifier: Modifier = Modifier) {
     if (LocalInspectionMode.current) {
