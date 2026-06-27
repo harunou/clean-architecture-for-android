@@ -1,4 +1,4 @@
-package com.cra.sample.feature.counter.counter
+package com.cra.sample.feature.counter.components.counter
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

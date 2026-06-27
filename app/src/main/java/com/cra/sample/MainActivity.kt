@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.cra.sample.feature.counter.counter.Counter
+import com.cra.sample.feature.counter.components.counter.Counter
 import com.cra.sample.ui.theme.CounterTheme
 import dagger.hilt.android.AndroidEntryPoint
 

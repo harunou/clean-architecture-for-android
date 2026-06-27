@@ -1,4 +1,4 @@
-package com.cra.sample.feature.counter.amountinput
+package com.cra.sample.feature.counter.components.amountinput
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

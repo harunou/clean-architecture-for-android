@@ -1,4 +1,4 @@
-package com.cra.sample.feature.counter.amountinput
+package com.cra.sample.feature.counter.components.amountinput
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
