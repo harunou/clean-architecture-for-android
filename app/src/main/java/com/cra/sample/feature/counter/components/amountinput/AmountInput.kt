@@ -1,15 +1,26 @@
 package com.cra.sample.feature.counter.components.amountinput
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import com.cra.sample.feature.counter.CounterStore
+import com.cra.sample.ui.theme.CounterTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +46,34 @@ import javax.inject.Inject
 //                             props to display data, and captures user interactions to
 //                             invoke methods on the component class. It accepts only
 //                             primitive values and plain data objects.
+//
+// The same component expressed in an Angular-style framework would look roughly like:
+//
+//   @Component({
+//     selector: 'amount-input',
+//     template: `
+//       <label>Amount: {{ labelAmount }}</label>
+//       <input type="range" min="1" max="10" [value]="sliderValue"
+//              (input)="onSliderValueChange($event)" />
+//     `,
+//   })
+//   export class AmountInputComponent {
+//     // injection analogue: collaborator resolved from the DI container (not implemented here)
+//     private store = inject(CounterStore);
+//
+//     // computed signals - the component's reactive state (kept private)
+//     private _sliderValue = computed(() => this.store.incrementAmount());
+//     private _labelAmount = computed(() => Math.trunc(this.store.incrementAmount()));
+//
+//     // getters expose plain primitives to the template; the signals stay private
+//     get sliderValue(): number { return this._sliderValue(); }
+//     get labelAmount(): number { return this._labelAmount(); }
+//
+//     // behavior - reads the raw event and maps it before delegating to the collaborator
+//     onSliderValueChange(event: Event) {
+//       this.store.setIncrementAmount(+(event.target as HTMLInputElement).value);
+//     }
+//   }
 
 @Composable
 fun AmountInput(modifier: Modifier = Modifier) {
@@ -69,4 +108,58 @@ class AmountInputViewModel @Inject constructor(private val store: CounterStore) 
 
     // Controller
     fun onSliderValueChange(value: Float) = store.setIncrementAmount(value)
+}
+
+@Composable
+fun AmountInputUi(
+    sliderValue: Float,
+    labelAmount: Int,
+    onSliderValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "Amount: $labelAmount",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Slider(
+            value = sliderValue,
+            onValueChange = onSliderValueChange,
+            valueRange = 1f..10f,
+            steps = 8,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Min")
+@Composable
+private fun AmountInputMinPreview() {
+    CounterTheme {
+        Surface {
+            AmountInputUi(sliderValue = 1f, labelAmount = 1, onSliderValueChange = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Mid")
+@Composable
+private fun AmountInputMidPreview() {
+    CounterTheme {
+        Surface {
+            AmountInputUi(sliderValue = 5f, labelAmount = 5, onSliderValueChange = {})
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Max")
+@Composable
+private fun AmountInputMaxPreview() {
+    CounterTheme {
+        Surface {
+            AmountInputUi(sliderValue = 10f, labelAmount = 10, onSliderValueChange = {})
+        }
+    }
 }
