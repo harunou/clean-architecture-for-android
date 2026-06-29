@@ -1,4 +1,4 @@
-package com.cra.sample.feature.counter.components.counter
+package com.cra.sample.feature.counter.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,7 +26,6 @@ import androidx.lifecycle.viewmodel.compose.rememberViewModelStoreOwner
 import com.cra.sample.core.Input
 import com.cra.sample.core.ProvideInput
 import com.cra.sample.feature.counter.CounterStore
-import com.cra.sample.feature.counter.components.amountinput.AmountInput
 import com.cra.sample.feature.counter.repository.CounterRepository
 import com.cra.sample.ui.theme.CounterTheme
 import dagger.hilt.android.lifecycle.HiltViewModel
