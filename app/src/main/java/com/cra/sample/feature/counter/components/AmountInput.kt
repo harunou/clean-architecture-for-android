@@ -49,14 +49,17 @@ import javax.inject.Inject
 //
 // The same component expressed in an Angular-style framework would look roughly like:
 //
+//   // Component binder
 //   @Component({
 //     selector: 'amount-input',
+//     // Component template
 //     template: `
 //       <label>Amount: {{ labelAmount }}</label>
 //       <input type="range" min="1" max="10" [value]="sliderValue"
 //              (input)="onSliderValueChange($event)" />
 //     `,
 //   })
+//   // Component class
 //   export class AmountInputComponent {
 //     // injection analogue: collaborator resolved from the DI container (not implemented here)
 //     private store = inject(CounterStore);
@@ -65,10 +68,12 @@ import javax.inject.Inject
 //     private _sliderValue = computed(() => this.store.incrementAmount());
 //     private _labelAmount = computed(() => Math.trunc(this.store.incrementAmount()));
 //
+//     // Presenter
 //     // getters expose plain primitives to the template; the signals stay private
 //     get sliderValue(): number { return this._sliderValue(); }
 //     get labelAmount(): number { return this._labelAmount(); }
 //
+//     // Controller
 //     // behavior - reads the raw event and maps it before delegating to the collaborator
 //     onSliderValueChange(event: Event) {
 //       this.store.setIncrementAmount(+(event.target as HTMLInputElement).value);

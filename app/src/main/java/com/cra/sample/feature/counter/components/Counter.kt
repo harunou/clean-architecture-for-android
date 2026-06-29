@@ -57,8 +57,10 @@ import javax.inject.Inject
 //
 // The same component expressed in an Angular-style framework would look roughly like:
 //
+//   // Component binder
 //   @Component({
 //     selector: 'counter',
+//     // Component template
 //     template: `
 //       <h1>{{ count }}</h1>
 //       <h2>{{ countLabel }}</h2>
@@ -67,6 +69,7 @@ import javax.inject.Inject
 //       <amount-input></amount-input>
 //     `,
 //   })
+//   // Component class
 //   export class CounterComponent {
 //     // injection analogue: collaborators resolved from the DI container (not implemented here)
 //     private repository = inject(CounterRepository);
@@ -80,10 +83,12 @@ import javax.inject.Inject
 //       return total > 0 ? 'Positive' : total < 0 ? 'Negative' : 'Zero';
 //     });
 //
+//     // Presenter
 //     // getters expose plain primitives to the template; the signals stay private
 //     get count(): string { return this._count(); }
 //     get countLabel(): string { return this._countLabel(); }
 //
+//     // Controller
 //     // behavior - delegates to the injected collaborators
 //     onIncrementClick() { this.repository.increment(this.store.incrementAmount()); }
 //     onDecrementClick() { this.repository.decrement(this.store.incrementAmount()); }
